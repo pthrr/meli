@@ -311,6 +311,12 @@ impl ImapConnection {
                             return Ok(None);
                         }
                     }
+                } else if previous_exists == n {
+                    // Nothing new since the count we already know — e.g. 0
+                    // after the last message was expunged. Fetching
+                    // `previous_exists + 1..=n` would build an empty sequence
+                    // set, which imap-codec rejects.
+                    Vec::new()
                 } else {
                     let sequence_set = if (previous_exists + 1) == n {
                         n.try_into()?
